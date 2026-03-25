@@ -1,0 +1,35 @@
+[Unit]
+Description=Beszel server monitoring hub
+After=network-online.target
+Wants=network-online.target
+
+[Container]
+Image=docker.io/henrygd/beszel:latest
+AutoUpdate=registry
+
+# The image runs as root (uid 0) inside the container.
+# In rootless Podman the default user-namespace mapping makes root-in-container
+# equivalent to the service user on the host, so no UserNS=keep-id is needed.
+
+# Environment variables
+EnvironmentFile=%h/.config/containers/systemd/beszel.env
+EnvironmentFile=%h/.config/containers/systemd/beszel.override.env
+
+# Persistent data volume — /beszel_data holds the PocketBase database and config
+Volume=%h/data:/beszel_data:Z
+
+# Port mapping — bind to localhost only, reverse proxy handles TLS
+PublishPort=127.0.0.1:8090:8090
+
+# Health check
+HealthCmd=curl -f http://localhost:8090/api/health || exit 1
+HealthInterval=30s
+HealthTimeout=10s
+HealthRetries=3
+
+[Service]
+Restart=always
+TimeoutStartSec=900
+
+[Install]
+WantedBy=default.target
