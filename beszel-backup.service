@@ -4,4 +4,4 @@ Description=Beszel backup
 [Service]
 Type=oneshot
 # Sync the entire data directory (PocketBase database and config) to the backup location
-ExecStart=/usr/bin/rsync -a --delete %h/data/ /var/backups/beszel/
+ExecStart=/usr/bin/rsync -a --delete --chmod=Dg+x,Fg+r %h/data/ /var/backups/beszel/
