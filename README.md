@@ -13,6 +13,8 @@ This project was created with the help of Claude Code and https://github.com/mko
 | `beszel.override.env.template` | Template for local overrides (APP_URL) |
 | `beszel-backup.service` | Systemd service: rsync data directory to backup location |
 | `beszel-backup.timer` | Systemd timer: triggers the backup daily |
+| `beszel-healthcheck.service` | Systemd service: checks `/api/health` endpoint, restarts Beszel if unhealthy |
+| `beszel-healthcheck.timer` | Systemd timer: triggers the health check every 90 seconds |
 
 ## Setup
 
@@ -117,6 +119,21 @@ sudo -u beszel XDG_RUNTIME_DIR=/run/user/$(id -u beszel) systemctl --user enable
 
 ```sh
 rsync -az backupuser@beszel-host:/var/backups/beszel/ /path/to/local/backup/beszel/
+```
+
+## Health check
+
+The Beszel container image is distroless (no shell or HTTP tools), so Podman's built-in `HealthCmd` cannot run inside the container. Instead, a systemd timer checks the `/api/health` endpoint from the host every 90 seconds and restarts Beszel if it fails.
+
+```sh
+# 1. Symlink the health check service and timer from the repo
+sudo -u beszel mkdir -p ~beszel/.config/systemd/user
+sudo -u beszel ln -s $REPO/beszel-healthcheck.service ~beszel/.config/systemd/user/beszel-healthcheck.service
+sudo -u beszel ln -s $REPO/beszel-healthcheck.timer ~beszel/.config/systemd/user/beszel-healthcheck.timer
+
+# 2. Enable and start the timer
+sudo -u beszel XDG_RUNTIME_DIR=/run/user/$(id -u beszel) systemctl --user daemon-reload
+sudo -u beszel XDG_RUNTIME_DIR=/run/user/$(id -u beszel) systemctl --user enable --now beszel-healthcheck.timer
 ```
 
 ## Notes

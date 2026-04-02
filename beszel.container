@@ -21,12 +21,6 @@ Volume=%h/data:/beszel_data:Z
 # Port mapping — bind to localhost only, reverse proxy handles TLS
 PublishPort=127.0.0.1:8090:8090
 
-# Health check
-HealthCmd=curl -f http://localhost:8090/api/health || exit 1
-HealthInterval=30s
-HealthTimeout=10s
-HealthRetries=3
-
 [Service]
 Restart=always
 TimeoutStartSec=900

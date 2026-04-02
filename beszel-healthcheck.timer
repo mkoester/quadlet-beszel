@@ -1,0 +1,9 @@
+[Unit]
+Description=Periodic Beszel health check
+
+[Timer]
+OnBootSec=5min
+OnUnitActiveSec=90s
+
+[Install]
+WantedBy=timers.target

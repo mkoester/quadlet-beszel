@@ -1,0 +1,6 @@
+[Unit]
+Description=Beszel health check
+
+[Service]
+Type=oneshot
+ExecStart=/bin/sh -c '/usr/bin/curl -sf http://127.0.0.1:8090/api/health || (echo "Beszel health check failed, restarting beszel.service" >&2; systemctl --user restart beszel.service)'
