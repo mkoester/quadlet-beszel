@@ -103,7 +103,7 @@ The backup service uses `rsync` to copy the entire data directory to the backup 
 # 1. Create backup staging directory (owned by beszel, readable by backup-readers group)
 sudo mkdir -p /var/backups/beszel
 sudo chown beszel:backup-readers /var/backups/beszel
-sudo chmod 750 /var/backups/beszel
+sudo chmod 2750 /var/backups/beszel
 
 # 2. Symlink the backup service and timer from the repo
 sudo -u beszel mkdir -p ~beszel/.config/systemd/user
